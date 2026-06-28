@@ -667,6 +667,13 @@
                     </div>
                 </div>
 
+                <!-- API Key 输入 -->
+                <div class="card" style="padding: 20px; margin-bottom: 24px;">
+                    <label style="margin-bottom: 8px; display: block;">API Key (可选)</label>
+                    <input type="text" id="apiKeyInput" placeholder="留空使用默认 Key" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--gray-50); color: var(--gray-900);">
+                    <p style="margin-top: 8px; font-size: 12px; color: var(--gray-500);">留空则使用内置密钥</p>
+                </div>
+
                 <!-- Tab切换 -->
                 <div class="card tabs">
                     <button class="tab active" id="tab-seamless4" onclick="switchTab('seamless4')">四方连续</button>
@@ -801,7 +808,12 @@
 
     <script>
         // 复制原index.html的所有JavaScript代码
-        const API_KEY = '942fe051413c45d59b0785900e297e24'; // 内置 API Key
+        const DEFAULT_API_KEY = 'ad72afab9ad7471b92d7b631809d790f'; // 默认 API Key
+
+        function getApiKey() {
+            const userKey = document.getElementById('apiKeyInput').value.trim();
+            return userKey || DEFAULT_API_KEY;
+        }
 
         let currentTab = 'seamless4';
         let uploadedImage = null;
@@ -1073,7 +1085,7 @@
             const response = await fetch('https://www.runninghub.cn/openapi/v2/media/upload/binary', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${API_KEY}`
+                    'Authorization': `Bearer ${getApiKey()}`
                 },
                 body: formData
             });
