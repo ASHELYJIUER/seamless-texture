@@ -646,6 +646,13 @@
         <header>
             <h1>无缝纹理生成器</h1>
             <p class="subtitle">四方连续 / 二方连续 - RunningHub ComfyUI V3</p>
+
+            <!-- API Key 输入 -->
+            <div class="card" style="max-width: 500px; margin: 24px auto 0; padding: 20px;">
+                <label style="margin-bottom: 8px; display: block;">API Key (可选)</label>
+                <input type="text" id="apiKeyInput" placeholder="留空使用默认 Key" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--gray-50); color: var(--gray-900);">
+                <p style="margin-top: 8px; font-size: 12px; color: var(--gray-500);">留空则使用内置密钥</p>
+            </div>
         </header>
 
         <div class="grid">
@@ -665,13 +672,6 @@
                             <img id="previewImg" src="" alt="预览" style="max-height: 200px; border-radius: 8px;">
                         </div>
                     </div>
-                </div>
-
-                <!-- API Key 输入 -->
-                <div class="card" style="padding: 20px; margin-bottom: 24px;">
-                    <label style="margin-bottom: 8px; display: block;">API Key (可选)</label>
-                    <input type="text" id="apiKeyInput" placeholder="留空使用默认 Key" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--gray-50); color: var(--gray-900);">
-                    <p style="margin-top: 8px; font-size: 12px; color: var(--gray-500);">留空则使用内置密钥</p>
                 </div>
 
                 <!-- Tab切换 -->
