@@ -83,7 +83,8 @@
             display: grid;
             grid-template-columns: 380px 1fr;
             gap: 24px;
-            align-items: start;
+            align-items: stretch;
+            margin-bottom: 32px;
         }
 
         .right-panel {
@@ -136,16 +137,18 @@
         .tabs {
             display: flex;
             gap: 8px;
-            padding: 20px;
-            margin-bottom: 24px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            background: var(--gray-50);
+            border-radius: 12px;
         }
 
         .tab {
             flex: 1;
-            padding: 14px 20px;
+            padding: 12px 20px;
             background: transparent;
-            border: 1.5px solid var(--gray-200);
-            border-radius: 10px;
+            border: none;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             color: var(--gray-600);
@@ -154,20 +157,20 @@
         }
 
         .tab:hover {
-            border-color: var(--gray-400);
-            background: var(--gray-50);
+            background: var(--white);
+            color: var(--gray-900);
         }
 
         .tab.active {
-            background: var(--black);
-            color: var(--white);
-            border-color: var(--black);
+            background: var(--white);
+            color: var(--black);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         /* 上传区域 */
         .upload-zone {
             position: relative;
-            padding: 48px 24px;
+            padding: 32px 24px;
             border: 2px dashed var(--gray-300);
             border-radius: 12px;
             text-align: center;
@@ -187,21 +190,21 @@
         }
 
         .upload-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
+            font-size: 36px;
+            margin-bottom: 12px;
             opacity: 0.3;
         }
 
         .upload-text {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--gray-600);
             font-weight: 500;
         }
 
         .upload-hint {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--gray-400);
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
         /* 滑块 */
@@ -265,21 +268,22 @@
         /* 主按钮 */
         .btn-primary {
             width: 100%;
-            padding: 16px 24px;
-            background: var(--black);
+            padding: 18px 24px;
+            background: linear-gradient(135deg, var(--black) 0%, var(--gray-800) 100%);
             color: var(--white);
             border: none;
             border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
             letter-spacing: -0.01em;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
         }
 
         .btn-primary:active {
@@ -287,7 +291,7 @@
         }
 
         .btn-primary:disabled {
-            opacity: 0.4;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
@@ -351,9 +355,32 @@
 
         .preview-section {
             padding: 24px;
-            height: 500px;
+            height: 600px;
             position: relative;
             overflow: hidden;
+        }
+
+        .preview-content {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+            height: 100%;
+        }
+
+        .preview-controls-panel {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .preview-controls-panel h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin: 0;
         }
 
         .preview-header {
@@ -408,11 +435,12 @@
 
         .preview-canvas {
             width: 100%;
-            height: calc(100% - 52px);
+            height: 100%;
             border-radius: 12px;
             background: var(--gray-100);
             position: relative;
             overflow: hidden;
+            border: 1px solid var(--gray-200);
         }
 
         .tile-preview {
@@ -646,20 +674,20 @@
         <header>
             <h1>无缝纹理生成器</h1>
             <p class="subtitle">四方连续 / 二方连续 - RunningHub ComfyUI V3</p>
-
-            <!-- API Key 输入 -->
-            <div class="card" style="max-width: 500px; margin: 24px auto 0; padding: 20px;">
-                <label style="margin-bottom: 8px; display: block;">API Key (可选)</label>
-                <input type="text" id="apiKeyInput" placeholder="留空使用默认 Key" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--gray-50); color: var(--gray-900);">
-                <p style="margin-top: 8px; font-size: 12px; color: var(--gray-500);">留空则使用内置密钥</p>
-            </div>
         </header>
+
+        <!-- API Key 输入 -->
+        <div class="card" style="margin-bottom: 32px; padding: 20px;">
+            <label style="margin-bottom: 8px; display: block;">API Key (必填)</label>
+            <input type="text" id="apiKeyInput" placeholder="请输入 RunningHub API Key" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--gray-50); color: var(--gray-900);">
+            <p style="margin-top: 8px; font-size: 12px; color: var(--gray-500);">未填写将无法生成</p>
+        </div>
 
         <div class="grid">
             <!-- 左侧控制面板 -->
             <div class="sidebar">
                 <!-- 上传区域 -->
-                <div class="card" style="padding: 20px; margin-bottom: 24px;">
+                <div class="card" style="padding: 24px; margin-bottom: 24px;">
                     <label>上传图片</label>
                     <div class="upload-zone" id="dropZone" onclick="document.getElementById('imageInput').click()">
                         <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
@@ -674,15 +702,15 @@
                     </div>
                 </div>
 
-                <!-- Tab切换 -->
-                <div class="card tabs">
+                <!-- 模式选择 -->
+                <div class="tabs">
                     <button class="tab active" id="tab-seamless4" onclick="switchTab('seamless4')">四方连续</button>
                     <button class="tab" id="tab-seamless2" onclick="switchTab('seamless2')">二方连续</button>
                 </div>
 
                 <!-- 二方连续方向选项 -->
-                <div class="card hidden" id="directionPanel" style="padding: 20px; margin-bottom: 24px;">
-                    <label style="margin-bottom: 12px;">连续方向</label>
+                <div class="hidden" id="directionPanel" style="padding: 16px 20px; margin-bottom: 16px; background: var(--gray-50); border-radius: 12px;">
+                    <label style="margin-bottom: 12px; font-size: 13px;">连续方向</label>
                     <div style="display: flex; gap: 8px;">
                         <button class="direction-btn active" id="dir-vertical" onclick="setDirection(false)" style="flex: 1; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: 8px; background: var(--black); color: var(--white); font-size: 13px; cursor: pointer; transition: all 0.2s;">
                             ↕️ 上下无缝
@@ -694,9 +722,9 @@
                 </div>
 
                 <!-- 扩展距离 -->
-                <div class="card slider-group">
+                <div style="padding: 16px 20px; margin-bottom: 16px; background: var(--gray-50); border-radius: 12px;">
                     <div class="slider-header">
-                        <label>扩展距离</label>
+                        <label style="font-size: 13px;">扩展距离</label>
                         <span class="slider-value" id="extendDistanceValue">100 px</span>
                     </div>
                     <input type="range" id="extendDistance" min="0" max="500" value="100" step="10" oninput="updateExtendDistance()">
@@ -705,7 +733,6 @@
                         <span>250</span>
                         <span>500</span>
                     </div>
-                    <p class="info-text">控制无缝衔接时的过渡区域大小</p>
                 </div>
 
                 <!-- 生成按钮 -->
@@ -714,25 +741,6 @@
                 </button>
 
                 <div class="section-gap"></div>
-
-                <!-- 预览设置 -->
-                <div class="card settings-panel">
-                    <div class="settings-title">预览设置</div>
-
-                    <div class="setting-row">
-                        <span class="setting-label">平铺尺寸</span>
-                        <span class="slider-value" id="tileSizeValue">200px</span>
-                    </div>
-                    <input type="range" id="tileSize" min="50" max="500" value="200" oninput="updateTileSize()" style="margin-top: 8px;">
-
-                    <div class="setting-row" style="margin-top: 16px;">
-                        <span class="setting-label">显示网格</span>
-                        <label class="toggle">
-                            <input type="checkbox" id="showGrid" onchange="toggleGrid()">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
             </div>
 
             <!-- 右侧预览区域 -->
@@ -764,27 +772,6 @@
                     </div>
                 </div>
 
-                <!-- 预览画布 -->
-                <div class="card preview-section">
-                    <div class="preview-header">
-                        <h3 class="preview-title">拼接预览</h3>
-                        <div class="preview-controls">
-                            <button class="btn-icon" onclick="zoomOut()">−</button>
-                            <button class="btn-icon" onclick="zoomIn()">+</button>
-                            <button class="btn-icon" onclick="resetZoom()">↻</button>
-                        </div>
-                    </div>
-                    <div class="preview-canvas">
-                        <div id="tilePreview" class="tile-preview" style="--tile-size: 200px; background-color: #f4f4f5;">
-                            <div id="previewPlaceholder" class="preview-placeholder">
-                                <div class="placeholder-icon">◧</div>
-                                <p class="placeholder-text">上传图片后显示预览</p>
-                            </div>
-                        </div>
-                        <div id="gridOverlay" class="grid-overlay" style="--tile-size: 200px; background-image: linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);"></div>
-                    </div>
-                </div>
-
                 <!-- 任务状态 -->
                 <div id="tasksContainer"></div>
 
@@ -801,18 +788,66 @@
             </div>
         </div>
 
+        <!-- 预览拼接区域 - 独立布局 -->
+        <div style="background: var(--gray-50); border-radius: 16px; padding: 32px; margin-bottom: 32px;">
+            <h2 style="font-size: 20px; font-weight: 700; color: var(--black); margin-bottom: 24px;">拼接预览</h2>
+            <div class="preview-content">
+                <!-- 左侧控制栏 -->
+                <div class="preview-controls-panel" style="background: var(--white);">
+                    <div>
+                        <h4 style="margin-bottom: 12px;">平铺尺寸</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 12px; color: var(--gray-600);">缩放</span>
+                            <span class="slider-value" id="tileSizeValue">200px</span>
+                        </div>
+                        <input type="range" id="tileSize" min="50" max="500" value="200" oninput="updateTileSize()">
+                        <div class="slider-scale" style="margin-top: 8px;">
+                            <span>50</span>
+                            <span>250</span>
+                            <span>500</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <button class="btn-icon" style="flex: 1;" onclick="zoomOut()">−</button>
+                            <button class="btn-icon" style="flex: 1;" onclick="zoomIn()">+</button>
+                            <button class="btn-icon" style="flex: 1;" onclick="resetZoom()">↻</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4>显示网格</h4>
+                            <label class="toggle">
+                                <input type="checkbox" id="showGrid" onchange="toggleGrid()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- 右侧预览画布 -->
+                <div class="preview-canvas" style="background: var(--white);">
+                    <div id="tilePreview" class="tile-preview" style="--tile-size: 200px; background-color: #f4f4f5;">
+                        <div id="previewPlaceholder" class="preview-placeholder">
+                            <div class="placeholder-icon">◧</div>
+                            <p class="placeholder-text">生成结果后显示拼接预览</p>
+                        </div>
+                    </div>
+                    <div id="gridOverlay" class="grid-overlay" style="--tile-size: 200px; background-image: linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px); opacity: 0;"></div>
+                </div>
+            </div>
+        </div>
+
         <footer>
             Powered by RunningHub ComfyUI API
         </footer>
     </div>
 
     <script>
-        // 复制原index.html的所有JavaScript代码
-        const DEFAULT_API_KEY = 'ad72afab9ad7471b92d7b631809d790f'; // 默认 API Key
-
+        // API Key 获取函数
         function getApiKey() {
             const userKey = document.getElementById('apiKeyInput').value.trim();
-            return userKey || DEFAULT_API_KEY;
+            if (!userKey) {
+                throw new Error('请先填写 API Key');
+            }
+            return userKey;
         }
 
         let currentTab = 'seamless4';
@@ -990,10 +1025,7 @@
                     document.getElementById('imagePreview').classList.remove('hidden');
                     document.getElementById('previewImg').src = e.target.result;
 
-                    // 更新预览
-                    const preview = document.getElementById('tilePreview');
-                    preview.style.backgroundImage = `url(${e.target.result})`;
-                    document.getElementById('previewPlaceholder').classList.add('hidden');
+                    // 不自动显示拼接预览，等生成结果后再显示
                 };
                 img.src = e.target.result;
             };
@@ -1111,7 +1143,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
+                    'Authorization': `Bearer ${getApiKey()}`
                 },
                 body: JSON.stringify({
                     nodeInfoList: [
@@ -1149,7 +1181,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
+                    'Authorization': `Bearer ${getApiKey()}`
                 },
                 body: JSON.stringify({ nodeInfoList })
             });
@@ -1185,7 +1217,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`
+                        'Authorization': `Bearer ${getApiKey()}`
                     },
                     body: JSON.stringify({ taskId: taskId })
                 });
