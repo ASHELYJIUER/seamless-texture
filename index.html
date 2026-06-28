@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无缝纹理生成器 V3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gray-50: #fafafa;
+            --gray-100: #f4f4f5;
+            --gray-200: #e4e4e7;
+            --gray-300: #d4d4d8;
+            --gray-400: #a1a1aa;
+            --gray-500: #71717a;
+            --gray-600: #52525b;
+            --gray-700: #3f3f46;
+            --gray-800: #27272a;
+            --gray-900: #18181b;
+            --black: #0a0a0a;
+            --white: #ffffff;
+            --accent: #3f3f46;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Manrope', -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* 高级卡片效果 */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border-color: var(--gray-300);
+        }
+
+        /* 标题 */
+        header {
+            text-align: center;
+            padding: 48px 0 32px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--black);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: var(--gray-500);
+            font-weight: 400;
+        }
+
+        /* 布局容器 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px 48px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+            align-items: stretch;
+            margin-bottom: 32px;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* API密钥输入 */
+        .api-section {
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: var(--gray-50);
+            color: var(--gray-900);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--gray-900);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Tab切换 */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            background: var(--gray-50);
+            border-radius: 12px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            background: var(--white);
+            color: var(--gray-900);
+        }
+
+        .tab.active {
+            background: var(--white);
+            color: var(--black);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 上传区域 */
+        .upload-zone {
+            position: relative;
+            padding: 32px 24px;
+            border: 2px dashed var(--gray-300);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--gray-50);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--gray-600);
+            background: var(--white);
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--black);
+            background: var(--gray-100);
+        }
+
+        .upload-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        .upload-text {
+            font-size: 13px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .upload-hint {
+            font-size: 11px;
+            color: var(--gray-400);
+            margin-top: 6px;
+        }
+
+        /* 滑块 */
+        .slider-group {
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .slider-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--black);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--gray-200);
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--black);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .slider-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .slider-scale span {
+            font-size: 11px;
+            color: var(--gray-400);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* 主按钮 */
+        .btn-primary {
+            width: 100%;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, var(--black) 0%, var(--gray-800) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: -0.01em;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 结果与预览区域 */
+        .result-section {
+            padding: 24px;
+            position: relative;
+        }
+
+        .result-frame {
+            position: relative;
+            height: 280px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-frame img {
+            width: 100%;
+            height: 100%;
+            display: none;
+            object-fit: contain;
+            cursor: pointer;
+            background: var(--gray-50);
+        }
+
+        .result-frame.has-result img {
+            display: block;
+        }
+
+        .result-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .result-frame.has-result .result-placeholder {
+            display: none;
+        }
+
+        .result-placeholder-icon {
+            font-size: 64px;
+            opacity: 0.15;
+            margin-bottom: 16px;
+        }
+
+        .result-placeholder-text {
+            font-size: 14px;
+            color: var(--gray-400);
+        }
+
+        .preview-section {
+            padding: 24px;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-content {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+            height: 100%;
+        }
+
+        .preview-controls-panel {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .preview-controls-panel h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin: 0;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .preview-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .btn-icon:hover {
+            background: var(--gray-900);
+            color: var(--white);
+            border-color: var(--gray-900);
+        }
+
+        .btn-icon:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-icon:disabled:hover {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            border-color: var(--gray-200);
+        }
+
+        .preview-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            background: var(--gray-100);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        .tile-preview {
+            width: 100%;
+            height: 100%;
+            background-repeat: repeat;
+            background-size: var(--tile-size);
+            transition: background-size 0.3s;
+        }
+
+        .preview-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .placeholder-icon {
+            font-size: 64px;
+            opacity: 0.15;
+            margin-bottom: 16px;
+        }
+
+        .placeholder-text {
+            font-size: 14px;
+            color: var(--gray-400);
+        }
+
+        /* Toggle开关 */
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+
+        .toggle {
+            position: relative;
+            width: 48px;
+            height: 24px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: var(--gray-200);
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider:before {
+            content: "";
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        input:checked + .toggle-slider {
+            background: var(--black);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        /* 结果网格 */
+        .results-section {
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 1px solid var(--gray-200);
+        }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .result-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+
+        /* 设置面板 */
+        .settings-panel {
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .settings-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        /* 动画 */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 32px 0;
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        /* 工具提示 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        /* 隐藏类 */
+        .hidden { display: none !important; }
+
+        /* 加载动画 */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gray-200);
+            border-top-color: var(--black);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 侧边栏空间 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .section-gap {
+            height: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>无缝纹理生成器</h1>
+            <p class="subtitle">四方连续 / 二方连续 - RunningHub ComfyUI V3</p>
+        </header>
+
+        <!-- API Key 输入 -->
+        <div class="card" style="margin-bottom: 32px; padding: 20px;">
+            <label style="margin-bottom: 8px; display: block;">API Key (必填)</label>
+            <input type="text" id="apiKeyInput" placeholder="请输入 RunningHub API Key" style="width: 100%; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--gray-50); color: var(--gray-900);">
+            <p style="margin-top: 8px; font-size: 12px; color: var(--gray-500);">未填写将无法生成</p>
+        </div>
+
+        <div class="grid">
+            <!-- 左侧控制面板 -->
+            <div class="sidebar">
+                <!-- 上传区域 -->
+                <div class="card" style="padding: 24px; margin-bottom: 24px;">
+                    <label>上传图片</label>
+                    <div class="upload-zone" id="dropZone" onclick="document.getElementById('imageInput').click()">
+                        <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+                        <div id="uploadPlaceholder">
+                            <div class="upload-icon">⬆</div>
+                            <p class="upload-text">点击或拖放图片</p>
+                            <p class="upload-hint">支持 JPG, PNG, WebP</p>
+                        </div>
+                        <div id="imagePreview" class="hidden">
+                            <img id="previewImg" src="" alt="预览" style="max-height: 200px; border-radius: 8px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模式选择 -->
+                <div class="tabs">
+                    <button class="tab active" id="tab-seamless4" onclick="switchTab('seamless4')">四方连续</button>
+                    <button class="tab" id="tab-seamless2" onclick="switchTab('seamless2')">二方连续</button>
+                </div>
+
+                <!-- 二方连续方向选项 -->
+                <div class="hidden" id="directionPanel" style="padding: 16px 20px; margin-bottom: 16px; background: var(--gray-50); border-radius: 12px;">
+                    <label style="margin-bottom: 12px; font-size: 13px;">连续方向</label>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="direction-btn active" id="dir-vertical" onclick="setDirection(false)" style="flex: 1; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: 8px; background: var(--black); color: var(--white); font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                            ↕️ 上下无缝
+                        </button>
+                        <button class="direction-btn" id="dir-horizontal" onclick="setDirection(true)" style="flex: 1; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: 8px; background: transparent; color: var(--gray-600); font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                            ↔️ 左右无缝
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 扩展距离 -->
+                <div style="padding: 16px 20px; margin-bottom: 16px; background: var(--gray-50); border-radius: 12px;">
+                    <div class="slider-header">
+                        <label style="font-size: 13px;">扩展距离</label>
+                        <span class="slider-value" id="extendDistanceValue">100 px</span>
+                    </div>
+                    <input type="range" id="extendDistance" min="0" max="500" value="100" step="10" oninput="updateExtendDistance()">
+                    <div class="slider-scale">
+                        <span>0</span>
+                        <span>250</span>
+                        <span>500</span>
+                    </div>
+                </div>
+
+                <!-- 生成按钮 -->
+                <button class="btn-primary" id="generateBtn" onclick="startGenerate()">
+                    开始转换
+                </button>
+
+                <div class="section-gap"></div>
+            </div>
+
+            <!-- 右侧预览区域 -->
+            <div class="right-panel">
+                <!-- 生成结果图片 -->
+                <div id="resultImageSection" class="card result-section">
+                    <div class="preview-header">
+                        <h3 class="preview-title">生成结果</h3>
+                        <button class="btn-icon" id="downloadResultBtn" onclick="downloadResultImage()" title="下载" aria-label="下载生成结果" disabled>⬇</button>
+                    </div>
+                    <div id="resultFrame" class="result-frame">
+                        <img id="resultImage" src="" alt="生成结果" onclick="openImageModal(this.src)">
+                        <div id="resultPlaceholder" class="result-placeholder">
+                            <div class="result-placeholder-icon">□</div>
+                            <p class="result-placeholder-text">生成后显示结果</p>
+                        </div>
+
+                        <!-- 进度遮罩 -->
+                        <div id="progressOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+                            <div style="text-align: center; color: white; padding: 20px;">
+                                <div class="spinner" style="border-color: rgba(255,255,255,0.3); border-top-color: white; margin: 0 auto 20px;"></div>
+                                <div id="overlayProgressText" style="font-size: 16px; font-weight: 600; margin-bottom: 8px; line-height: 1.4;">正在生成...</div>
+                                <div id="overlayProgressDetail" style="font-size: 13px; opacity: 0.85; margin-bottom: 16px; line-height: 1.4;">请稍候</div>
+                                <div style="width: 240px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto; overflow: hidden;">
+                                    <div id="overlayProgressBar" style="width: 0%; height: 100%; background: white; transition: width 0.3s;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 任务状态 -->
+                <div id="tasksContainer"></div>
+
+                <!-- 结果网格 -->
+                <div id="resultsGrid" class="hidden">
+                    <div class="card results-section">
+                        <div class="results-header">
+                            <h3 class="preview-title">生成结果</h3>
+                            <button class="btn-icon" onclick="clearAllResults()">🗑</button>
+                        </div>
+                        <div id="resultsGridContent" class="results-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预览拼接区域 - 独立布局 -->
+        <div style="background: var(--gray-50); border-radius: 16px; padding: 32px; margin-bottom: 32px;">
+            <h2 style="font-size: 20px; font-weight: 700; color: var(--black); margin-bottom: 24px;">拼接预览</h2>
+            <div class="preview-content">
+                <!-- 左侧控制栏 -->
+                <div class="preview-controls-panel" style="background: var(--white);">
+                    <div>
+                        <h4 style="margin-bottom: 12px;">平铺尺寸</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 12px; color: var(--gray-600);">缩放</span>
+                            <span class="slider-value" id="tileSizeValue">200px</span>
+                        </div>
+                        <input type="range" id="tileSize" min="50" max="500" value="200" oninput="updateTileSize()">
+                        <div class="slider-scale" style="margin-top: 8px;">
+                            <span>50</span>
+                            <span>250</span>
+                            <span>500</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <button class="btn-icon" style="flex: 1;" onclick="zoomOut()">−</button>
+                            <button class="btn-icon" style="flex: 1;" onclick="zoomIn()">+</button>
+                            <button class="btn-icon" style="flex: 1;" onclick="resetZoom()">↻</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4>显示网格</h4>
+                            <label class="toggle">
+                                <input type="checkbox" id="showGrid" onchange="toggleGrid()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- 右侧预览画布 -->
+                <div class="preview-canvas" style="background: var(--white);">
+                    <div id="tilePreview" class="tile-preview" style="--tile-size: 200px; background-color: #f4f4f5;">
+                        <div id="previewPlaceholder" class="preview-placeholder">
+                            <div class="placeholder-icon">◧</div>
+                            <p class="placeholder-text">生成结果后显示拼接预览</p>
+                        </div>
+                    </div>
+                    <div id="gridOverlay" class="grid-overlay" style="--tile-size: 200px; background-image: linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px); opacity: 0;"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Powered by RunningHub ComfyUI API
+        </footer>
+    </div>
+
+    <script>
+        // API Key 获取函数
+        function getApiKey() {
+            const userKey = document.getElementById('apiKeyInput').value.trim();
+            if (!userKey) {
+                throw new Error('请先填写 API Key');
+            }
+            return userKey;
+        }
+
+        let currentTab = 'seamless4';
+        let uploadedImage = null;
+        let isLeftRight = false;
+        let tileSize = 200;
+        let extendDistance = 100;
+        let currentPreviewUrl = null;
+        let currentPreviewSize = null;
+
+        const tasks = {};
+        const results = [];
+        let taskCounter = 0;
+
+        const RUNNINGHUB_API_BASE = 'https://www.runninghub.cn';
+
+        const WORKFLOW_CONFIG = {
+            seamless4: {
+                id: '2070788344090554370',
+                name: '四方连续',
+                nodes: {
+                    image: { nodeId: '78', fieldName: 'image' },
+                    extend: { nodeId: '578', fieldName: 'value' }
+                }
+            },
+            seamless2: {
+                id: '2070744926350041090',
+                name: '二方连续',
+                nodes: {
+                    image: { nodeId: '78', fieldName: 'image' },
+                    direction: { nodeId: '562', fieldName: 'value' },
+                    extend: { nodeId: '511', fieldName: 'value' }
+                }
+            }
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropZone = document.getElementById('dropZone');
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
+                dropZone.addEventListener(e, preventDefaults, false);
+            });
+            ['dragenter', 'dragover'].forEach(e => {
+                dropZone.addEventListener(e, () => dropZone.classList.add('dragover'), false);
+            });
+            ['dragleave', 'drop'].forEach(e => {
+                dropZone.addEventListener(e, () => dropZone.classList.remove('dragover'), false);
+            });
+            dropZone.addEventListener('drop', handleDrop, false);
+            document.addEventListener('paste', handlePaste);
+        });
+
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            if (tab === 'seamless2') {
+                document.getElementById('directionPanel').classList.remove('hidden');
+            } else {
+                document.getElementById('directionPanel').classList.add('hidden');
+            }
+        }
+
+        function updateExtendDistance() {
+            extendDistance = parseInt(document.getElementById('extendDistance').value);
+            document.getElementById('extendDistanceValue').textContent = `${extendDistance} px`;
+        }
+
+        function updateTileSize() {
+            tileSize = parseInt(document.getElementById('tileSize').value);
+            document.getElementById('tileSizeValue').textContent = `${tileSize}px`;
+            document.getElementById('tilePreview').style.setProperty('--tile-size', `${tileSize}px`);
+            document.getElementById('gridOverlay').style.setProperty('--tile-size', `${tileSize}px`);
+        }
+
+        function toggleGrid() {
+            const grid = document.getElementById('gridOverlay');
+            const checked = document.getElementById('showGrid').checked;
+            grid.style.opacity = checked ? '1' : '0';
+        }
+
+        function updateDirection() {
+            isLeftRight = document.getElementById('directionToggle').checked;
+            document.getElementById('dirLabel').textContent = isLeftRight ? '左右无缝' : '上下无缝';
+        }
+
+        function setDirection(isHorizontal) {
+            isLeftRight = isHorizontal;
+
+            // 更新按钮样式
+            const verticalBtn = document.getElementById('dir-vertical');
+            const horizontalBtn = document.getElementById('dir-horizontal');
+
+            if (isHorizontal) {
+                verticalBtn.style.background = 'transparent';
+                verticalBtn.style.color = 'var(--gray-600)';
+                horizontalBtn.style.background = 'var(--black)';
+                horizontalBtn.style.color = 'var(--white)';
+            } else {
+                verticalBtn.style.background = 'var(--black)';
+                verticalBtn.style.color = 'var(--white)';
+                horizontalBtn.style.background = 'transparent';
+                horizontalBtn.style.color = 'var(--gray-600)';
+            }
+        }
+
+        function zoomIn() {
+            tileSize = Math.min(500, tileSize + 50);
+            document.getElementById('tileSize').value = tileSize;
+            updateTileSize();
+        }
+
+        function zoomOut() {
+            tileSize = Math.max(50, tileSize - 50);
+            document.getElementById('tileSize').value = tileSize;
+            updateTileSize();
+        }
+
+        function resetZoom() {
+            tileSize = 200;
+            document.getElementById('tileSize').value = tileSize;
+            updateTileSize();
+        }
+
+        function handleImageSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            processImageFile(file);
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                processImageFile(files[0]);
+            }
+        }
+
+        function handlePaste(e) {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            for (let item of items) {
+                if (item.type.indexOf('image') !== -1) {
+                    const file = item.getAsFile();
+                    processImageFile(file);
+                    break;
+                }
+            }
+        }
+
+        function processImageFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    uploadedImage = {
+                        base64: e.target.result,
+                        fileName: file.name,
+                        width: img.width,
+                        height: img.height
+                    };
+
+                    // 根据图片尺寸自动计算扩展距离：1k=80, 2k=160, 以此类推
+                    const baseSize = Math.max(img.width, img.height);
+                    const k = Math.round(baseSize / 1000);
+                    const autoDistance = Math.max(1, k) * 80;
+                    extendDistance = Math.min(500, autoDistance);
+                    document.getElementById('extendDistance').value = extendDistance;
+                    document.getElementById('extendDistanceValue').textContent = `${extendDistance} px`;
+
+                    document.getElementById('uploadPlaceholder').classList.add('hidden');
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                    document.getElementById('previewImg').src = e.target.result;
+
+                    // 不自动显示拼接预览，等生成结果后再显示
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearImage() {
+            uploadedImage = null;
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+        }
+
+        async function startGenerate() {
+            if (!uploadedImage) {
+                alert('请先上传图片');
+                return;
+            }
+
+            const btn = document.getElementById('generateBtn');
+            const progressOverlay = document.getElementById('progressOverlay');
+            const overlayProgressText = document.getElementById('overlayProgressText');
+            const overlayProgressDetail = document.getElementById('overlayProgressDetail');
+            const overlayProgressBar = document.getElementById('overlayProgressBar');
+
+            btn.disabled = true;
+            btn.textContent = '生成中...';
+
+            // 显示进度遮罩，结果区域保持固定占位
+            progressOverlay.style.display = 'flex';
+            overlayProgressText.textContent = '准备上传图片...';
+            overlayProgressDetail.textContent = '正在处理';
+            overlayProgressBar.style.width = '10%';
+
+            try {
+                console.log('=== 开始生成 ===');
+                console.log('当前模式:', currentTab);
+                console.log('扩展距离:', extendDistance);
+
+                // 先上传图片获取文件名
+                overlayProgressText.textContent = '上传图片中...';
+                overlayProgressDetail.textContent = '正在上传到服务器';
+                overlayProgressBar.style.width = '30%';
+
+                const fileName = await uploadImageToRunningHub();
+                console.log('图片上传成功，文件名:', fileName);
+
+                // 根据当前tab调用不同的API
+                overlayProgressText.textContent = '启动生成任务...';
+                overlayProgressDetail.textContent = currentTab === 'seamless4' ? '四方连续生成中' : '二方连续生成中';
+                overlayProgressBar.style.width = '50%';
+
+                if (currentTab === 'seamless4') {
+                    console.log('调用四方连续API...');
+                    await generateSeamless4(fileName);
+                } else {
+                    console.log('调用二方连续API...');
+                    console.log('方向:', isLeftRight ? '左右' : '上下');
+                    await generateSeamless2(fileName);
+                }
+            } catch (error) {
+                console.error('=== 生成失败 ===');
+                console.error('错误类型:', error.name);
+                console.error('错误信息:', error.message);
+                console.error('完整错误:', error);
+                alert('生成失败：' + error.message);
+                progressOverlay.style.display = 'none';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '开始转换';
+            }
+        }
+
+        // 上传图片到RunningHub
+        async function uploadImageToRunningHub() {
+            // 将base64转换为Blob
+            const base64Data = uploadedImage.base64.split(',')[1];
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'image/png' });
+
+            // 使用FormData上传
+            const formData = new FormData();
+            formData.append('file', blob, uploadedImage.fileName || 'upload.png');
+
+            const response = await fetch('https://www.runninghub.cn/openapi/v2/media/upload/binary', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${getApiKey()}`
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`图片上传失败: ${response.status} - ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log('上传响应:', data);
+
+            if (data.code === 0 && data.data && data.data.fileName) {
+                return data.data.fileName;
+            } else {
+                throw new Error('上传返回数据格式错误');
+            }
+        }
+
+        // 四方连续生成（使用文件名）
+        async function generateSeamless4(fileName) {
+            const response = await fetch('https://www.runninghub.cn/openapi/v2/run/ai-app/2070788344090554370', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getApiKey()}`
+                },
+                body: JSON.stringify({
+                    nodeInfoList: [
+                        { nodeId: '578', fieldName: 'value', fieldValue: String(extendDistance) },
+                        { nodeId: '78', fieldName: 'image', fieldValue: fileName }
+                    ]
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`四方连续生成失败: ${response.status} - ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log('API响应:', data);
+
+            if (data.taskId) {
+                pollTaskStatus(data.taskId, '四方连续');
+            } else {
+                throw new Error('未返回taskId');
+            }
+        }
+
+        // 二方连续生成（使用文件名）
+        async function generateSeamless2(fileName) {
+            // 节点110=方向开关(false上下/true左右), 节点111=重绘距离, 节点96=图片
+            const nodeInfoList = [
+                { nodeId: '110', fieldName: 'value', fieldValue: String(isLeftRight) },
+                { nodeId: '111', fieldName: 'value', fieldValue: String(extendDistance) },
+                { nodeId: '96', fieldName: 'image', fieldValue: fileName }
+            ];
+
+            const response = await fetch('https://www.runninghub.cn/openapi/v2/run/ai-app/2070823808684085249', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getApiKey()}`
+                },
+                body: JSON.stringify({ nodeInfoList })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`二方连续生成失败: ${response.status} - ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log('API响应:', data);
+
+            if (data.taskId) {
+                pollTaskStatus(data.taskId, '二方连续');
+            } else {
+                throw new Error('未返回taskId');
+            }
+        }
+
+        // 轮询任务状态
+        async function pollTaskStatus(taskId, type) {
+            const maxAttempts = 120; // 增加到120次
+            let attempts = 0;
+
+            const overlayProgressText = document.getElementById('overlayProgressText');
+            const overlayProgressDetail = document.getElementById('overlayProgressDetail');
+            const overlayProgressBar = document.getElementById('overlayProgressBar');
+
+            const poll = async () => {
+                attempts++;
+
+                const response = await fetch('https://www.runninghub.cn/openapi/v2/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getApiKey()}`
+                    },
+                    body: JSON.stringify({ taskId: taskId })
+                });
+
+                const data = await response.json();
+
+                // 更新进度
+                const progress = Math.min(50 + (attempts / maxAttempts) * 45, 95);
+                overlayProgressBar.style.width = progress + '%';
+                overlayProgressText.textContent = '正在生成无缝纹理...';
+                overlayProgressDetail.textContent = '';
+
+                // 每10次轮询才打印一次日志，减少控制台输出
+                if (attempts % 10 === 0 || data.status !== 'RUNNING') {
+                    console.log(`轮询 ${attempts}/${maxAttempts}:`, data.status);
+                }
+
+                if (data.status === 'SUCCESS') {
+                    overlayProgressText.textContent = '生成完成！';
+                    overlayProgressDetail.textContent = '正在加载结果...';
+                    overlayProgressBar.style.width = '100%';
+                    setTimeout(() => {
+                        displayResult(data.results, type);
+                        document.getElementById('progressOverlay').style.display = 'none';
+                    }, 500);
+                } else if (data.status === 'FAILED') {
+                    console.error('任务失败详情:', data);
+                    console.error('错误码:', data.errorCode);
+                    console.error('错误信息:', data.errorMessage);
+                    console.error('失败原因:', data.failedReason);
+                    document.getElementById('progressOverlay').style.display = 'none';
+                    throw new Error('任务失败: ' + (data.errorMessage || JSON.stringify(data.failedReason)));
+                } else if (attempts < maxAttempts) {
+                    setTimeout(poll, 5000); // 改为5秒轮询一次，减少请求频率
+                } else {
+                    document.getElementById('progressOverlay').style.display = 'none';
+                    throw new Error('任务超时（已等待10分钟），请检查RunningHub控制台');
+                }
+            };
+
+            poll();
+        }
+
+        // 显示生成结果
+        function displayResult(outputs, type) {
+            console.log('显示结果:', outputs);
+
+            if (outputs && outputs.length > 0) {
+                // 显示第一张生成的图片
+                const resultUrl = outputs[0].url;
+                const resultFrame = document.getElementById('resultFrame');
+                const resultImage = document.getElementById('resultImage');
+                const downloadBtn = document.getElementById('downloadResultBtn');
+
+                resultImage.src = resultUrl;
+                resultFrame.classList.add('has-result');
+                downloadBtn.disabled = false;
+
+                // 更新平铺预览
+                const preview = document.getElementById('tilePreview');
+                preview.style.backgroundImage = `url(${resultUrl})`;
+                document.getElementById('previewPlaceholder').style.display = 'none';
+
+                // 保存当前结果URL
+                window.currentResultUrl = resultUrl;
+
+                console.log('结果显示完成');
+            }
+        }
+
+        function downloadResultImage() {
+            if (window.currentResultUrl) {
+                const a = document.createElement('a');
+                a.href = window.currentResultUrl;
+                a.download = `seamless-texture-${Date.now()}.png`;
+                a.click();
+            }
+        }
+
+        function openImageModal(url) {
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
