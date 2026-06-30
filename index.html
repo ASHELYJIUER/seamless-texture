@@ -1139,7 +1139,7 @@
 
         // 四方连续生成（使用文件名）
         async function generateSeamless4(fileName) {
-            const response = await fetch('https://www.runninghub.cn/openapi/v2/run/ai-app/2070788344090554370', {
+            const response = await fetch('https://www.runninghub.cn/openapi/v2/run/ai-app/2071880976388673537', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1147,8 +1147,8 @@
                 },
                 body: JSON.stringify({
                     nodeInfoList: [
-                        { nodeId: '578', fieldName: 'value', fieldValue: String(extendDistance) },
-                        { nodeId: '78', fieldName: 'image', fieldValue: fileName }
+                        { nodeId: '459', fieldName: 'value', fieldValue: String(extendDistance) },
+                        { nodeId: '458', fieldName: 'image', fieldValue: fileName }
                     ]
                 })
             });
@@ -1161,10 +1161,19 @@
             const data = await response.json();
             console.log('API响应:', data);
 
-            if (data.taskId) {
+            if (data.code === 0 && data.data && data.data.download_url) {
+                const overlayProgressText = document.getElementById('overlayProgressText');
+                const overlayProgressBar = document.getElementById('overlayProgressBar');
+                overlayProgressText.textContent = '生成完成！';
+                overlayProgressBar.style.width = '100%';
+                setTimeout(() => {
+                    displayResult([{ url: data.data.download_url }], '四方连续');
+                    document.getElementById('progressOverlay').style.display = 'none';
+                }, 500);
+            } else if (data.taskId) {
                 pollTaskStatus(data.taskId, '四方连续');
             } else {
-                throw new Error('未返回taskId');
+                throw new Error('接口返回异常: ' + JSON.stringify(data));
             }
         }
 
@@ -1177,7 +1186,7 @@
                 { nodeId: '96', fieldName: 'image', fieldValue: fileName }
             ];
 
-            const response = await fetch('https://www.runninghub.cn/openapi/v2/run/ai-app/2070823808684085249', {
+            const response = await fetch('https://www.runninghub.cn/openapi/v2/run/ai-app/2071875939352535042', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1194,10 +1203,19 @@
             const data = await response.json();
             console.log('API响应:', data);
 
-            if (data.taskId) {
+            if (data.code === 0 && data.data && data.data.download_url) {
+                const overlayProgressText = document.getElementById('overlayProgressText');
+                const overlayProgressBar = document.getElementById('overlayProgressBar');
+                overlayProgressText.textContent = '生成完成！';
+                overlayProgressBar.style.width = '100%';
+                setTimeout(() => {
+                    displayResult([{ url: data.data.download_url }], '二方连续');
+                    document.getElementById('progressOverlay').style.display = 'none';
+                }, 500);
+            } else if (data.taskId) {
                 pollTaskStatus(data.taskId, '二方连续');
             } else {
-                throw new Error('未返回taskId');
+                throw new Error('接口返回异常: ' + JSON.stringify(data));
             }
         }
 
